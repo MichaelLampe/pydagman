@@ -6,7 +6,13 @@ Job: Represent a DAGman Condor job
 DuplicateParentError: Exception thrown when trying to add a parent already in
 the parents list
 """
-from shortuuid import uuid
+
+# Remove the shortuuid dependency from package.
+try:
+    from shortuuid import uuid as uuid
+except ImportError:
+     from uuid import uuid4 as uuid
+
 
 class Job:
     """
@@ -32,7 +38,7 @@ class Job:
         Yields:
         Job object
         """
-        self.name = name if name else uuid()
+        self.name = name if name else str(uuid())
         self.submit_file = submit_file
         self.vars = {}
         self.parents = []
@@ -63,8 +69,7 @@ class Job:
             self.parents.append(parent_job.name)
         else:
             raise DuplicateParentError("DuplicateParentError in \
-                  dagman.Job.add_parent: Parent job %s is already a parent of %s."
-            % (parent_job.name, self.name))
+                  dagman.Job.add_parent: Parent job %s is already a parent of %s." % (parent_job.name, self.name))
 
     def add_pre(self, path, *args):
         """Add a SCRIPT PRE directive to the job
@@ -112,7 +117,9 @@ class Job:
 
 class DuplicateParentError(Exception):
     """Thrown if attempting to add a parent that is already in the parents list"""
+
     def __init__(self, msg):
         self.msg = msg
+
     def __str__(self):
         return self.msg

@@ -5,3 +5,5 @@ Classes:
 Dagfile: Represents a DAGman file
 Job: Represents a DAGman Condor job
 """
+from .job import Job
+from .dagfile import Dagfile
